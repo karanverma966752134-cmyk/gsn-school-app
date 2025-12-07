@@ -5,6 +5,9 @@ services:
   - type: web
     name: gsn-school-app
     env: node
+    # When your repo contains the app in a subfolder, set the root
+    # directory so Render runs build/start from there.
+    root: gsn-school-app
     plan: free
     repo: .
     branch: main
