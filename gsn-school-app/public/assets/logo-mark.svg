@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none">
+  <rect width="120" height="120" rx="18" fill="#3b82f6"/>
+  <path d="M30 85 L30 45 L60 25 L90 45 L90 85 L60 105 L30 85 Z" fill="#fff" opacity="0.95"/>
+  <text x="60" y="60" font-family="sans-serif" font-weight="700" font-size="18" fill="#0b1220" text-anchor="middle" dominant-baseline="middle">GSN</text>
+</svg>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Payments · GSN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="center fade-in">
+    <div class="shell">
+      <div class="left">
+        <div class="brand">GSN PUBLIC SCHOOL</div>
+        <div class="hero">Payments History</div>
+        <div class="muted">Recent fee payments recorded in the system</div>
+      </div>
+      <div class="right">
+        <div class="card">
+          <div class="topbar">
+            <div class="row align-center gap-8"><button class="back-btn" data-fallback="/staff-dashboard.html" title="Back">←</button><strong>Payments</strong></div>
+            <div class="nav"><a href="/staff-dashboard.html">Dashboard</a><a href="/payments.html" class="active">Payments</a></div>
+          </div>
+
+          <div class="row gap-8 align-center mt-12">
+            <input id="paymentsSearch" placeholder="Search by student name or adm no" class="flex-1">
+            <button id="refreshPayments" class="btn">Refresh</button>
+          </div>
+
+          <table class="table" id="paymentsTable">
+            <thead><tr><th>Date</th><th>Receipt</th><th>Student</th><th>Amount</th><th>Month</th><th>Mode</th><th>Notes</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="payments.js?v=20251206.1"></script>
+  <script src="back.js"></script>
+</body>
+</html>

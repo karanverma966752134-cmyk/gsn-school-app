@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Staff Management</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="center fade-in">
+    <div class="shell">
+      <div class="left">
+        <div class="brand">GSN PUBLIC SCHOOL</div>
+        <div class="hero">Staff Management</div>
+        <div class="muted">View, add and manage staff accounts</div>
+      </div>
+      <div class="right">
+        <div class="card">
+          <div class="topbar">
+            <div class="row align-center gap-8"><button class="back-btn" data-fallback="/staff-dashboard.html" title="Back">←</button><strong>Staff List</strong></div>
+            <div class="nav"><a href="/staff-dashboard.html">Dashboard</a><a href="/staff.html" class="active">Staff</a></div>
+          </div>
+
+          <!-- Confirmation modal (reusable) -->
+          <div id="confirmBackdrop" class="confirm-backdrop" role="dialog" aria-hidden="true">
+            <div class="confirm-box">
+              <div id="confirmMessage">Are you sure?</div>
+              <div class="confirm-actions">
+                <button id="confirmCancel" class="btn secondary">Cancel</button>
+                <button id="confirmOk" class="btn danger">Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="toolbar mt-12">
+            <button id="showAdd" class="btn">Add Staff</button>
+            <button id="exportStaffCsv" class="btn">Export CSV</button>
+            <label class="btn"><input id="staffFile" class="hidden" type="file" accept="text/csv">Import CSV</label>
+          </div>
+
+          <div class="searchRow mt-8">
+            <input id="staffSearch" placeholder="Search staff by name or staff id" />
+          </div>
+
+          <table class="table" id="staffTable">
+            <thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Phone</th><th>Email</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+
+          <!-- Staff modal -->
+          <div id="staffModal" class="modal" aria-hidden="true">
+            <div class="modal-content">
+              <h3 id="staffModalTitle">Add Staff</h3>
+              <form id="staffForm">
+                <input type="hidden" id="editId" />
+                <div class="form-row"><label>Staff ID</label><input id="staff_id" required /></div>
+                <div class="form-row"><label>Name</label><input id="name" required /></div>
+                <div class="form-row"><label>Role</label>
+                  <select id="role">
+                    <option>Teacher</option>
+                    <option>Admin</option>
+                    <option>Principal</option>
+                  </select>
+                </div>
+                <div class="form-row"><label>Phone</label><input id="phone" /></div>
+                <div class="form-row"><label>Email</label><input id="email" type="email" /></div>
+                <div class="form-actions">
+                  <button type="submit" class="btn">Save</button>
+                  <button type="button" id="cancelStaff" class="btn muted">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Import Preview Modal -->
+          <div id="importPreviewBackdrop" class="confirm-backdrop hidden" role="dialog" aria-hidden="true">
+            <div class="modal modal-wide">
+              <h3 id="previewTitle">Preview Import</h3>
+              <p id="previewInfo" class="small-muted mt-8"></p>
+              <div class="overflow-x-auto mt-12">
+                <table class="table" id="previewTable">
+                  <thead><tr id="previewHeaders"></tr></thead>
+                  <tbody id="previewBody"></tbody>
+                </table>
+              </div>
+              <div class="row gap-8 justify-end mt-12">
+                <button id="previewCancel" class="btn ghost">Cancel</button>
+                <button id="previewConfirm" class="btn">Import All</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="staff.js"></script>
+  <script src="back.js"></script>
+</body>
+</html>

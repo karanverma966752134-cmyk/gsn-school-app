@@ -1,0 +1,30 @@
+# Render service configuration for gsn-school-app
+# Replace values as needed before committing
+
+services:
+  - type: web
+    name: gsn-school-app
+    env: node
+    plan: free
+    repo: .
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/dashboard
+    autoDeploy: true
+    # Environment variables should be set in the Render dashboard for security.
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+
+# Note: Do NOT commit secrets (JWT_SECRET) to the repo. Set `JWT_SECRET` in
+# the Render Dashboard (Service -> Environment) before deploying.
+
+# Notes:
+# - Render will inject PORT automatically; the app uses process.env.PORT || 3000.
+# - For production use, set a secure JWT_SECRET in Render's Environment settings (not in this file),
+#   or replace `REPLACE_ME` with your secret before pushing (not recommended).
+# - If you plan to use a managed database (Postgres), update the code to use the DB_URL environment
+#   variable and set it in Render. If you'd like, I can prepare a Postgres migration and adapter.

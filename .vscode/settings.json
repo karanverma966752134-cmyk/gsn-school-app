@@ -1,0 +1,11 @@
+{
+  "json.validate.enable": true,
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.associations": {
+    "*.html": "html"
+  },
+  "html.validate.styles": false,
+  "css.lint.validProperties": ["composes"]
+}

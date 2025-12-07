@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Students & Attendance</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="center fade-in">
+    <div class="shell">
+      <div class="left">
+        <div class="brand">GSN PUBLIC SCHOOL</div>
+        <div class="hero">Students & Attendance</div>
+        <div class="muted">Manage student records and take attendance</div>
+      </div>
+      <div class="right">
+        <div class="form-card">
+          <div class="topbar">
+            <div class="row align-center gap-8"><button class="back-btn" data-fallback="/staff-dashboard.html" title="Back">←</button><strong>Students</strong></div>
+            <div class="nav"><a href="/staff-dashboard.html">Dashboard</a><a href="/students.html" class="active">Students</a></div>
+          </div>
+
+          <div class="toolbar mt-12">
+            <div class="row gap-8 align-center">
+              <button id="showAddStudent" class="btn">Add Student</button>
+              <button id="exportStudentsCsv" class="btn">Export Students CSV</button>
+              <button id="exportUdise" class="btn">Export UDISE+</button>
+              <label class="btn"><input id="studentsFile" class="hidden" type="file" accept="text/csv">Import CSV</label>
+            </div>
+            <div class="flex-1"></div>
+            <input id="filterClass" class="" placeholder="Class (e.g. 6)" />
+            <input id="filterSection" class="" placeholder="Section (e.g. A)" />
+            <button id="loadClass" class="btn">Load</button>
+          </div>
+
+          <div class="toolbar mt-8">
+            <input id="studentsSearch" class="flex-1" placeholder="Search by name, adm no, class or section" />
+            <div id="studentsPager" class="row gap-6 align-center">
+              <button id="prevPage" class="btn ghost">Prev</button>
+              <span id="pageInfo">1</span>
+              <button id="nextPage" class="btn ghost">Next</button>
+            </div>
+          </div>
+          <table class="table" id="studentsTable">
+            <thead><tr><th>Adm No</th><th>Name</th><th>Class</th><th>Section</th><th>Contact</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+
+          <hr />
+          <div><strong>Attendance</strong></div>
+          <div class="row gap-8 align-center mt-8">
+            <label for="attDate" class="visually-hidden">Attendance date</label>
+            <input id="attDate" type="date" />
+            <input id="attClass" placeholder="Class" class="" />
+            <input id="attSection" placeholder="Section" class="" />
+            <button id="loadAttendance" class="btn">Load Students</button>
+          </div>
+
+          <div class="bulk-actions">
+            <button id="markAllPresent" class="btn ghost">Mark All Present</button>
+            <button id="markAllAbsent" class="btn ghost">Mark All Absent</button>
+            <button id="clearAttendance" class="btn ghost">Clear</button>
+            <button id="exportAttendanceCsv" class="btn">Export Attendance CSV</button>
+            <label class="btn"><input id="attendanceFile" class="hidden" type="file" accept="text/csv">Import Attendance CSV</label>
+          </div>
+
+          <form id="attendanceForm">
+            <table class="table" id="attendanceTable">
+              <thead><tr><th>Name</th><th>Adm No</th><th>Present</th><th>Remark</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <button id="saveAttendance" type="button" class="btn">Save Attendance</button>
+          </form>
+
+          <hr />
+          <div><strong>Fees Management</strong></div>
+          <div class="row gap-8 align-center mt-8">
+              <input id="feesSearch" placeholder="Search student by name or adm no" class="flex-1" />
+              <button id="showFeesModal" class="btn">Record Payment</button>
+              <button id="showCustomReceipt" class="btn">Create Custom Receipt</button>
+            </div>
+          <table class="table" id="feesTable">
+            <thead><tr><th>Adm No</th><th>Name</th><th>Class</th><th>Last Paid</th><th>Pending Balance</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="students.js?v=20251206.1"></script>
+  <script src="back.js"></script>
+
+  <!-- Modal for adding/editing students -->
+  <div id="studentModal" class="hidden">
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h3 id="modalTitle">Add Student</h3>
+        <div class="form-row">
+          <input id="mAdm" placeholder="Admission No" class="w-220" />
+          <button id="genAdm" class="btn ghost ml-8" type="button">Generate</button>
+          <input id="mName" placeholder="Name" />
+        </div>
+          <div class="form-row mt-8">
+          <label for="mClass" class="visually-hidden">Class</label>
+          <select id="mClass">
+            <option value="">Select Class</option>
+            <option>Nursery</option>
+            <option>KG</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>10</option>
+            <option>11</option>
+            <option>12</option>
+          </select>
+          <label for="mSection" class="visually-hidden">Section</label>
+          <select id="mSection">
+            <option value="">Select Section</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </div>
+        <div class="mt-8">
+          <input id="mContact" placeholder="Contact" />
+        </div>
+        <div class="row gap-8 justify-end mt-12">
+          <button id="modalCancel" class="btn ghost">Cancel</button>
+          <button id="modalSave" class="btn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Confirmation modal (reusable) -->
+  <div id="confirmBackdrop" class="confirm-backdrop" role="dialog" aria-hidden="true">
+    <div class="confirm-box">
+      <div id="confirmMessage">Are you sure?</div>
+      <div class="confirm-actions">
+        <button id="confirmCancel" class="btn secondary">Cancel</button>
+        <button id="confirmOk" class="btn danger">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fees Payment Modal -->
+  <div id="feesModal" class="hidden">
+    <div class="modal-backdrop">
+      <div class="modal modal-max-500">
+        <h3>Record Fee Payment</h3>
+        <div class="mt-12">
+          <label class="display-block mb-8">Student: <strong id="feesStudentName"></strong></label>
+          <label class="display-block mb-8">Pending Balance: <strong id="feesPendingAmount">₹0</strong></label>
+        </div>
+        <div class="mt-8">
+          <label>Payment Amount (₹)</label>
+          <input id="feesAmount" type="number" placeholder="Enter amount" class="w-100" />
+        </div>
+        <div class="mt-8">
+          <label for="feesMonth">Payment Month</label>
+          <input id="feesMonth" type="month" class="w-100" />
+        </div>
+        <div class="mt-8">
+          <label>Payment Mode</label>
+          <label for="feesMode" class="visually-hidden">Payment Mode</label>
+          <select id="feesMode" class="w-100">
+            <option>Cash</option>
+            <option>Check</option>
+            <option>Bank Transfer</option>
+            <option>Online</option>
+          </select>
+        </div>
+        <div class="mt-8">
+          <label>Notes</label>
+          <textarea id="feesNotes" placeholder="Optional notes" class="w-100 h-60"></textarea>
+        </div>
+        <div class="row gap-8 justify-end mt-12">
+          <button id="feesModalCancel" class="btn ghost">Cancel</button>
+          <button id="feesModalSave" class="btn">Record Payment & Print Receipt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Receipt Modal for Printing -->
+  <div id="receiptModal" class="hidden">
+    <div class="modal-backdrop">
+      <div class="modal modal-max-600">
+        <div id="receiptContent" class="receipt-content">
+          <div class="receipt-center">
+            <h2 class="receipt-title">GSN PUBLIC SCHOOL</h2>
+            <p class="receipt-subtitle">Shernagar, Muzaffarnagar (251001)</p>
+            <h3 class="mt-8">Fee Receipt</h3>
+          </div>
+          <table class="receipt-table">
+            <tr><td class="receipt-cell w-40p"><strong>Receipt No:</strong></td><td id="receiptNo"></td></tr>
+            <tr><td class="receipt-cell"><strong>Date:</strong></td><td id="receiptDate"></td></tr>
+            <tr><td class="receipt-cell"><strong>Student Name:</strong></td><td id="receiptStudentName"></td></tr>
+            <tr><td class="receipt-cell"><strong>Admission No:</strong></td><td id="receiptAdmNo"></td></tr>
+            <tr><td class="receipt-cell"><strong>Class/Section:</strong></td><td id="receiptClassSection"></td></tr>
+          </table>
+          <table class="receipt-table">
+            <tr class="row-muted"><th class="receipt-cell">Description</th><th class="receipt-cell">Amount</th></tr>
+            <tr><td class="receipt-cell">Fee Payment for <span id="receiptMonth"></span></td><td class="receipt-cell text-right">₹<span id="receiptAmount"></span></td></tr>
+            <tr class="row-muted"><th class="receipt-cell text-right">Total:</th><td class="receipt-cell receipt-total text-right">₹<span id="receiptTotal"></span></td></tr>
+          </table>
+          <p class="mt-12"><strong>Payment Mode:</strong> <span id="receiptMode"></span></p>
+          <p class="mt-4"><strong>Remaining Balance:</strong> ₹<span id="receiptBalance"></span></p>
+          <div class="mt-12 text-center text-small">
+            <p class="my-4">Thank you for the payment</p>
+            <p class="my-4">School Official</p>
+          </div>
+        </div>
+        <div class="row gap-8 justify-end mt-12">
+          <button id="printReceipt" class="btn">Print Receipt</button>
+          <button id="downloadReceipt" class="btn">Download PDF</button>
+          <button id="closeReceipt" class="btn ghost">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Receipt Builder Modal -->
+  <div id="customReceiptModal" class="hidden">
+    <div class="modal-backdrop">
+      <div class="modal modal-max-600">
+        <h3>Create Custom Receipt</h3>
+        <div class="mt-12">
+          <label class="display-block mb-8">Student Name</label>
+          <input id="crStudentName" placeholder="Enter student name" class="w-100" />
+        </div>
+        <div class="mt-12">
+          <label class="display-block mb-8">Admission No</label>
+          <input id="crAdmNo" placeholder="e.g. 2025/001" class="w-100" />
+        </div>
+        <div class="mt-12">
+          <label class="display-block mb-8">Class/Section</label>
+          <input id="crClassSection" placeholder="e.g. 6-A" class="w-100" />
+        </div>
+        <div class="mt-12">
+          <label class="display-block mb-8">Description</label>
+          <input id="crDescription" placeholder="e.g. Fee Payment for November" class="w-100" />
+        </div>
+        <div class="mt-12">
+          <label class="display-block mb-8">Amount (₹)</label>
+          <input id="crAmount" type="number" placeholder="0" class="w-100" />
+        </div>
+        <div class="mt-12">
+          <label class="display-block mb-8">Payment Mode</label>
+          <label for="crMode" class="visually-hidden">Payment Mode</label>
+          <select id="crMode" class="w-100">
+            <option>Cash</option>
+            <option>Check</option>
+            <option>Bank Transfer</option>
+            <option>Online</option>
+          </select>
+        </div>
+        <div class="mt-12">
+          <label class="display-block mb-8">Remaining Balance (₹)</label>
+          <input id="crBalance" type="number" placeholder="0" class="w-100" />
+        </div>
+        <div class="row gap-8 justify-end mt-12">
+          <button id="cancelCustomReceipt" class="btn ghost">Cancel</button>
+          <button id="generateCustomReceipt" class="btn">Generate Receipt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Preview Modal -->
+  <div id="importPreviewBackdrop" class="confirm-backdrop hidden" role="dialog" aria-hidden="true">
+    <div class="modal modal-wide">
+      <h3 id="previewTitle">Preview Import</h3>
+      <p id="previewInfo" class="small-muted mt-8"></p>
+      <div class="overflow-x-auto mt-12">
+        <table class="table" id="previewTable">
+          <thead><tr id="previewHeaders"></tr></thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+      <div class="row gap-8 justify-end mt-12">
+        <button id="previewCancel" class="btn ghost">Cancel</button>
+        <button id="previewConfirm" class="btn">Import All</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

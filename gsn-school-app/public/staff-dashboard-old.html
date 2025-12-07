@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GSN PUBLIC SCHOOL · Staff Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #0b1120;
+      --sidebar-bg: linear-gradient(180deg, #020617, #111827);
+      --card-bg: #020617;
+      --card-border: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #ef4444;
+      --accent: #f97316;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      color: var(--text);
+      display: flex;
+    }
+
+    /* Layout */
+    .app {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      width: 100%;
+      min-height: 100vh;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--sidebar-bg);
+      color: var(--text);
+      padding: 14px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("https://images.pexels.com/photos/2897386/pexels-photo-2897386.jpeg?auto=compress&cs=tinysrgb&w=800");
+      background-size: cover;
+      background-position: center;
+      opacity: 0.12;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .sidebar-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(55, 65, 81, 0.7);
+      margin-bottom: 10px;
+    }
+
+		.brand-logo {
+			width: 42px;
+			height: 42px;
+			border-radius: 12px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+    @keyframes logoPulse {
+      0%,
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 3px rgba(248, 250, 252, 0.4);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 6px rgba(248, 250, 252, 0.2);
+      }
+    }
+
+    .brand-text h1 {
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .brand-text p {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+      margin: 8px 4px 4px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .nav button {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #d1d5db;
+      text-align: left;
+      padding: 7px 9px;
+      border-radius: 10px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.18s ease, transform 0.08s ease;
+    }
+
+    .nav button span.icon {
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav button:hover {
+      background: rgba(31, 41, 55, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .nav button.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #f9fafb;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.6);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid rgba(55, 65, 81, 0.7);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .sidebar-footer span {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    /* Main area */
+    .main {
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at top left, #1f2937, #020617);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .topbar-left h2 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .topbar-left p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      color: #e5e7eb;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #0f172a;
+      border: 1px solid #1f2937;
+    }
+
+    .user-avatar {
+			width: 28px;
+			height: 28px;
+			border-radius: 999px;
+			background-image: url('assets/logo-mark.svg');
+			background-size: cover;
+			background-position: center;
+			box-shadow: 0 0 0 2px rgba(248, 250, 252, 0.5);
+    }
+
+    .user-info {
+      font-size: 11px;
+    }
+
+    .user-info span {
+      color: #9ca3af;
+    }
+
+    .btn-ghost {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 11px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.08s ease;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(31, 41, 55, 0.96);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost:active {
+      transform: translateY(1px);
+    }
+
+    .content {
+      padding: 14px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .page {
+      display: none;
+      animation: pageFade 0.25s ease-out;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes pageFade {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.97);
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+      padding: 10px 12px;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.75);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .card-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .metric {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.35);
+      animation: pulseDot 1.8s infinite ease-out;
+    }
+
+    @keyframes pulseDot {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.7);
+        opacity: 0;
+      }
+    }
+
+    .page-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .page-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .page-header p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .btn-primary {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #f9fafb;
+      font-size: 12px;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.7);
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 32px rgba(37, 99, 235, 0.85);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.65);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(15, 23, 42, 0.95);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.8);
+    }
+
+    th,
+    td {
+      padding: 7px 8px;
+      border-bottom: 1px solid #1f2937;
+      text-align: left;
+    }
+
+    th {
+      background: #020617;
+      font-weight: 600;
+      color: #9ca3af;
+      font-size: 11px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    .badge-green {
+      background: #14532d;
+      color: #bbf7d0;
+    }
+
+    .badge-yellow {
+      background: #78350f;
+      color: #fef9c3;
+    }
+
+    .badge-red {
+      background: #7f1d1d;
+      color: #fee2e2;
+    }
+
+    input[type="radio"] {
+      transform: scale(1.05);
+      cursor: pointer;
+    }
+
+    input.att-remark {
+      width: 100%;
+      font-size: 11px;
+      padding: 5px 6px;
+      border-radius: 8px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .app {
+        grid-template-columns: auto;
+      }
+      .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        bottom: 0;
+        width: 230px;
+        z-index: 20;
+        transition: left 0.18s ease;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+      .topbar {
+        padding-right: 10px;
+      }
+      .mobile-toggle {
+        display: inline-flex;
+      }
+    }
+
+    @media (min-width: 861px) {
+      .mobile-toggle {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-inner">
+				<div class="brand">
+					<div class="brand-logo"><img src="assets/logo-mark.svg" alt="GSN" class="brand-logo-img"></div>
+					<div class="brand-text">
+						<h1>GSN PUBLIC</h1>
+						<p>Shernagar · Muzaffarnagar</p>
+					</div>
+				</div>
+
+        <div class="nav-group">
+          <div class="nav-section-title">Main</div>
+          <nav class="nav">
+            <button class="nav-link active" data-page="dashboard">
+              <span class="icon"></span> Dashboard
+            </button>
+            <button class="nav-link" data-page="students">
+              <span class="icon"></span> Students
+            </button>
+            <button class="nav-link" data-page="attendance">
+              <span class="icon"></span> Attendance
+            </button>
+            <button class="nav-link" data-page="fees">
+              <span class="icon"></span> Fees
+            </button>
+            <button class="nav-link" data-page="homework">
+              <span class="icon"></span> Homework
+            </button>
+          </nav>
+        </div>
+
+        <div class="sidebar-footer">
+          GSN Staff App &copy; <span id="year"></span><br />
+          Session <span>2025–26</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+			<header class="topbar">
+				<div class="topbar-left">
+					<div class="row">
+						<button class="btn-ghost mobile-toggle" id="toggleSidebar">☰</button>
+						<button class="back-btn btn-ghost" data-fallback="/staff-dashboard.html" title="Back"></button>
+						<h2 id="pageTitle">Dashboard</h2>
+					</div>
+					<p class="small-muted">GSN PUBLIC SCHOOL · Staff Portal</p>
+				</div>
+
+        <div class="topbar-right">
+          <div class="chip">Campus: Shernagar (251001)</div>
+          <div class="user-pill">
+            <div class="user-avatar"></div>
+            <div class="user-info">
+              <div id="userName">Staff</div>
+              <div><span id="userRole">Role</span></div>
+            </div>
+          </div>
+          <button class="btn-ghost" onclick="logout()">Logout</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- DASHBOARD -->
+        <section class="page active" id="page-dashboard">
+          <div class="cards-row">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Total Students</div>
+                  <div class="card-sub">All classes</div>
+                </div>
+                <div class="pulse-dot"></div>
+              </div>
+              <div class="metric" id="dashStudents">0</div>
+              <div class="metric-sub">From GSN database</div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Staff Members</div>
+                  <div class="card-sub">Teaching & non-teaching</div>
+                </div>
+              </div>
+              <div class="metric" id="dashStaff">0</div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Pending Fees</div>
+                  <div class="card-sub">Approximate outstanding</div>
+                </div>
+              </div>
+              <div class="metric" id="dashPendingFees">₹ 0</div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Today</div>
+                  <div class="card-sub">Quick view</div>
+                </div>
+              </div>
+              <div class="metric-sub" id="dashDate"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STUDENTS -->
+        <section class="page" id="page-students">
+          <div class="page-header">
+            <div>
+              <h3>Students</h3>
+              <p>List of registered students.</p>
+            </div>
+            <div class="toolbar">
+              <button class="btn-primary" onclick="loadStudents()">Refresh</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+            <tr>
+              <th>Adm No.</th>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Section</th>
+              <th>Contact</th>
+            </tr>
+            </thead>
+            <tbody id="studentsBody">
+            <tr><td colspan="5">Loading...</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ATTENDANCE -->
+        <section class="page" id="page-attendance">
+          <div class="page-header">
+            <div>
+              <h3>Attendance</h3>
+              <p>Mark daily attendance for a class & section.</p>
+            </div>
+            <div class="toolbar">
+              <input type="date" id="attDate" />
+              <select id="attClass">
+                <option value="6">Class 6</option>
+                <option value="7">Class 7</option>
+                <option value="8">Class 8</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
+              </select>
+              <select id="attSection">
+                <option value="A">Section A</option>
+                <option value="B">Section B</option>
+                <option value="C">Section C</option>
+              </select>
+              <button class="btn-ghost" onclick="loadAttendance()">Load</button>
+              <button class="btn-primary" onclick="saveAttendance()">Save</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Present</th>
+              <th>Absent</th>
+              <th>Remark</th>
+            </tr>
+            </thead>
+            <tbody id="attBody">
+            <tr><td colspan="5">Select date & class and click Load.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- FEES -->
+        <section class="page" id="page-fees">
+          <div class="page-header">
+            <div>
+              <h3>Fees</h3>
+              <p>Outstanding and last paid month summary.</p>
+            </div>
+            <div class="toolbar">
+              <button class="btn-primary" onclick="loadFees()">Refresh</button>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+            <tr>
+              <th>Adm No.</th>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Section</th>
+              <th>Last Paid</th>
+              <th>Balance</th>
+            </tr>
+            </thead>
+            <tbody id="feesBody">
+            <tr><td colspan="6">Loading...</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- HOMEWORK (simple list) -->
+        <section class="page" id="page-homework">
+          <div class="page-header">
+            <div>
+              <h3>Homework</h3>
+              <p>Recently added homework (demo).</p>
+            </div>
+            <div class="toolbar">
+              <button class="btn-ghost" onclick="createDemoHomework()">Add demo homework</button>
+              <button class="btn-primary" onclick="loadHomework()">Refresh</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+            <tr>
+              <th>Class</th>
+              <th>Section</th>
+              <th>Subject</th>
+              <th>Title</th>
+              <th>Due Date</th>
+            </tr>
+            </thead>
+            <tbody id="homeworkBody">
+            <tr><td colspan="5">No homework loaded.</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+		</main>
+	</div>
+
+	<script src="back.js"></script>
+
+	<script>
+    const staff = JSON.parse(localStorage.getItem("staff") || "null");
+    if (!staff) {
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("userName").textContent = staff?.name || "Staff";
+    document.getElementById("userRole").textContent = staff?.role || "Staff";
+
+    const navButtons = document.querySelectorAll(".nav-link");
+    const pages = document.querySelectorAll(".page");
+    const pageTitle = document.getElementById("pageTitle");
+    const sidebar = document.getElementById("sidebar");
+    document.getElementById("toggleSidebar").onclick = () => {
+      sidebar.classList.toggle("open");
+    };
+
+    function setToday() {
+      const d = new Date();
+      const options = { weekday: "short", month: "short", day: "numeric", year: "numeric" };
+      document.getElementById("dashDate").textContent = d.toLocaleDateString("en-IN", options);
+
+      const dateInput = document.getElementById("attDate");
+      if (dateInput && !dateInput.value) {
+        dateInput.value = d.toISOString().split("T")[0];
+      }
+    }
+    setToday();
+
+    function logout() {
+      localStorage.removeItem("staff");
+      window.location.href = "login.html";
+    }
+
+    function openPage(pageName) {
+      pages.forEach((p) => p.classList.remove("active"));
+      navButtons.forEach((b) => b.classList.remove("active"));
+
+      const page = document.getElementById("page-" + pageName);
+      if (page) page.classList.add("active");
+
+      const btn = document.querySelector('.nav-link[data-page="' + pageName + '"]');
+      if (btn) btn.classList.add("active");
+
+      const titleEl = page?.querySelector("h3");
+      pageTitle.textContent = titleEl ? titleEl.textContent : "Dashboard";
+
+      if (pageName === "dashboard") loadDashboard();
+      if (pageName === "students") loadStudents();
+      if (pageName === "attendance") loadAttendance();
+      if (pageName === "fees") loadFees();
+      if (pageName === "homework") loadHomework();
+
+      sidebar.classList.remove("open");
+    }
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const page = btn.getAttribute("data-page");
+        openPage(page);
+      });
+    });
+
+    // Helper API calls
+    async function apiGet(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("API error: " + res.status);
+      return res.json();
+    }
+
+    async function apiPost(url, body) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error("API error: " + res.status);
+      return res.json();
+    }
+
+    // Dashboard
+    async function loadDashboard() {
+      try {
+        const data = await apiGet("/api/dashboard");
+        document.getElementById("dashStudents").textContent = data.totalStudents;
+        document.getElementById("dashStaff").textContent = data.totalStaff;
+        document.getElementById("dashPendingFees").textContent =
+          "₹ " + Number(data.pendingFees || 0).toLocaleString("en-IN");
+      } catch (err) {
+        console.error("Dashboard:", err);
+      }
+    }
+
+    // Students
+    async function loadStudents() {
+      try {
+        const students = await apiGet("/api/students");
+        const tbody = document.getElementById("studentsBody");
+        tbody.innerHTML = "";
+        if (!students.length) {
+          tbody.innerHTML = '<tr><td colspan="5">No students found.</td></tr>';
+          return;
+        }
+        students.forEach((s) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${s.adm_no}</td>
+            <td>${s.name}</td>
+            <td>${s.class}</td>
+            <td>${s.section}</td>
+            <td>${s.contact || ""}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Students:", err);
+      }
+    }
+
+    // Attendance
+    async function loadAttendance() {
+      try {
+        const date = document.getElementById("attDate").value;
+        const cls = document.getElementById("attClass").value;
+        const section = document.getElementById("attSection").value;
+        if (!date) {
+          alert("Please select a date.");
+          return;
+        }
+        const data = await apiGet(
+          `/api/attendance?date=${encodeURIComponent(date)}&class=${encodeURIComponent(
+            cls
+          )}&section=${encodeURIComponent(section)}`
+        );
+        const tbody = document.getElementById("attBody");
+        tbody.innerHTML = "";
+        if (!data.length) {
+          tbody.innerHTML = `<tr><td colspan="5">No students found for Class ${cls} - ${section}.</td></tr>`;
+          return;
+        }
+        data.forEach((row, index) => {
+          const s = row.student;
+          const a = row.attendance;
+          const status = a ? a.status : "Present";
+          const remark = a ? a.remark : "";
+          const radioName = `att-${s.id}`;
+
+          const tr = document.createElement("tr");
+          tr.dataset.id = s.id;
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${s.name}</td>
+            <td><input type="radio" name="${radioName}" value="Present" ${
+            status === "Present" ? "checked" : ""
+          }></td>
+            <td><input type="radio" name="${radioName}" value="Absent" ${
+            status === "Absent" ? "checked" : ""
+          }></td>
+            <td><input class="att-remark" type="text" value="${remark
+              .replace(/"/g, "&quot;")
+              .replace(/</g, "&lt;")}"></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Attendance:", err);
+        alert("Error loading attendance.");
+      }
+    }
+
+    async function saveAttendance() {
+      try {
+        const date = document.getElementById("attDate").value;
+        if (!date) {
+          alert("Please select a date.");
+          return;
+        }
+        const rows = document.querySelectorAll("#attBody tr");
+        const records = [];
+        rows.forEach((tr) => {
+          const id = tr.dataset.id;
+          if (!id) return;
+          const present = tr.querySelector(`input[name="att-${id}"][value="Present"]`);
+          const absent = tr.querySelector(`input[name="att-${id}"][value="Absent"]`);
+          const remarkInput = tr.querySelector(".att-remark");
+          let status = "Absent";
+          if (present && present.checked) status = "Present";
+          else if (absent && absent.checked) status = "Absent";
+          records.push({
+            student_id: Number(id),
+            status,
+            remark: remarkInput ? remarkInput.value.trim() : "",
+          });
+        });
+        if (!records.length) {
+          alert("No records to save.");
+          return;
+        }
+        await apiPost("/api/attendance", { date, records });
+        alert("Attendance saved.");
+        await loadAttendance();
+      } catch (err) {
+        console.error("Save attendance:", err);
+        alert("Error saving attendance.");
+      }
+    }
+
+    // Fees
+    async function loadFees() {
+      try {
+        const fees = await apiGet("/api/fees");
+        const tbody = document.getElementById("feesBody");
+        tbody.innerHTML = "";
+        if (!fees.length) {
+          tbody.innerHTML = '<tr><td colspan="6">No fee data.</td></tr>';
+          return;
+        }
+        fees.forEach((f) => {
+          const tr = document.createElement("tr");
+          const bal = Number(f.balance || 0);
+          const badgeClass =
+            bal <= 0 ? "badge-green" : bal < 5000 ? "badge-yellow" : "badge-red";
+          tr.innerHTML = `
+            <td>${f.adm_no}</td>
+            <td>${f.name}</td>
+            <td>${f.class}</td>
+            <td>${f.section}</td>
+            <td>${f.last_paid_month}</td>
+            <td><span class="badge ${badgeClass}">₹ ${bal.toLocaleString("en-IN")}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Fees:", err);
+      }
+    }
+
+    // Homework demo
+    async function loadHomework() {
+      try {
+        const hw = await apiGet("/api/homework");
+        const tbody = document.getElementById("homeworkBody");
+        tbody.innerHTML = "";
+        if (!hw.length) {
+          tbody.innerHTML = '<tr><td colspan="5">No homework created yet.</td></tr>';
+          return;
+        }
+        hw.forEach((h) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${h.class}</td>
+            <td>${h.section}</td>
+            <td>${h.subject}</td>
+            <td>${h.title}</td>
+            <td>${h.due_date || "-"}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Homework:", err);
+      }
+    }
+
+    async function createDemoHomework() {
+      try {
+        await apiPost("/api/homework", {
+          class: "6",
+          section: "A",
+          subject: "English",
+          title: "Chapter 3 – Q/A Revision",
+          instructions: "Solve all questions in notebook.",
+          due_date: new Date().toISOString().split("T")[0],
+          created_by_staff_id: staff?.id || null,
+        });
+        alert("Demo homework created.");
+        loadHomework();
+      } catch (err) {
+        console.error("Create homework:", err);
+        alert("Error creating homework.");
+      }
+    }
+
+	// Initial
+	loadDashboard();
+  </script>
+</body>
+</html>

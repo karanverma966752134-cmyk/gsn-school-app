@@ -1,0 +1,20 @@
+Fees error: Error: SQLITE_ERROR: near " ": syntax error
+--> in Database#all('SELECT s.adm_no, s.name, s.class, s.section,\n' +
+  "              COALESCE(f.last_paid_month, '-') AS last_paid_month,\n" +
+  '              COALESCE(f.balance, 0) AS balance\n' +
+  '       FROM students s\n' +
+  '       LEFT JOIN fees f ON s.id = f.student_id\n' +
+  '       ORDER BY s.class, s.section, s.adm_no', [], [Function (anonymous)])
+    at C:\Users\DELL\OneDrive\Desktop\my app\gsn-school-app\server.js:69:8
+    at new Promise (<anonymous>)
+    at dbAll (C:\Users\DELL\OneDrive\Desktop\my app\gsn-school-app\server.js:68:10)
+    at C:\Users\DELL\OneDrive\Desktop\my app\gsn-school-app\server.js:241:24
+    at Layer.handle [as handle_request] (C:\Users\DELL\OneDrive\Desktop\my app\gsn-school-app\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\DELL\OneDrive\Desktop\my app\gsn-school-app\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\DELL\OneDrive\Desktop\my app\gsn-school-app\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\DELL\OneDrive\Desktop\my app\gsn-school-app\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\DELL\OneDrive\Desktop\my app\gsn-school-app\node_modules\express\lib\router\index.js:284:15 {
+  errno: 1,
+  code: 'SQLITE_ERROR',
+  __augmented: true
+}

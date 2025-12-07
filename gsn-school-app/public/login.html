@@ -1,0 +1,215 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GSN PUBLIC SCHOOL · Staff Login</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* page specific small tweaks that rely on design tokens */
+    .login-shell{max-width:1100px;margin:18px auto;border-radius:20px;overflow:hidden;display:grid;grid-template-columns:1.1fr 1fr;box-shadow:var(--shadow-2);}
+    .login-left{padding:28px;background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-right:1px solid var(--glass-border)}
+    .login-hero{border-radius:14px;overflow:hidden;min-height:220px;position:relative;background-image:url('https://images.pexels.com/photos/256395/pexels-photo-256395.jpeg');background-size:cover;background-position:center;filter:brightness(0.6)}
+    .login-hero .overlay{position:relative;padding:18px;color:var(--text)}
+    .logo-upload-area{position:relative;width:100%;padding:14px;border-radius:12px;border:2px dashed rgba(255,255,255,0.04);background:transparent;text-align:center;cursor:pointer}
+    .logo-preview{width:86px;height:86px;border-radius:12px;object-fit:contain;display:block;margin:0 auto 10px}
+    .form-card{width:100%;max-width:420px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid var(--glass-border)}
+    .muted-small{font-size:12px;color:var(--muted)}
+    @media (max-width:900px){.login-shell{grid-template-columns:1fr}.login-left{display:none}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="login-shell rounded fade-up">
+      <aside class="login-left">
+        <div class="login-hero rounded">
+          <div class="overlay">
+            <div class="badge"><span class="badge-dot"></span> Live · GSN Staff Portal</div>
+            <h3 class="hero">GSN PUBLIC SCHOOL</h3>
+            <p class="muted-small">Shernagar, Muzaffarnagar — Internal portal for teachers and staff.</p>
+            <div class="stats-row">
+              <div><strong class="display-block">700+</strong> Students</div>
+              <div><strong class="display-block">40+</strong> Staff</div>
+              <div><strong class="display-block">100%</strong> Digital</div>
+            </div>
+          </div>
+        </div>
+        <div class="brand-footer muted-small">GSN Staff App © <span id="year"></span><br><b>Authorised Use Only</b></div>
+      </aside>
+
+      <main class="right">
+        <div class="form-card">
+          <div class="form-header">
+            <div class="logo-mini">GSN</div>
+            <div>
+              <h2>Staff Login</h2>
+              <div class="muted-small">Enter your Staff ID and password</div>
+            </div>
+          </div>
+
+          <form id="loginForm">
+            <div class="logo-upload-area" id="logoUploadArea">
+              <img id="logoPreview" class="logo-preview" alt="School Logo" />
+              <div id="uploadText" class="muted-small"><strong>Click to upload school logo</strong><br>or drag & drop an image</div>
+              <div id="removeLogoBtn" class="remove-logo-btn">Remove logo</div>
+              <label for="logoInput" class="visually-hidden">Upload school logo</label>
+              <input id="logoInput" type="file" accept="image/*">
+            </div>
+
+            <label for="staffId" class="muted-small">Staff ID</label>
+            <input id="staffId" placeholder="e.g. GSN-T-001" autocomplete="username">
+
+            <label for="password" class="muted-small">Password</label>
+            <input id="password" type="password" placeholder="Enter password" autocomplete="current-password">
+
+            <button class="btn" type="submit">Login to Portal</button>
+
+            <div class="form-note">Demo users: <strong>GSN-T-001</strong> / <strong>GSN-A-001</strong> / <strong>GSN-P-001</strong> — password: <strong>password123</strong></div>
+            <div class="small-note">Forgot password? Contact school admin.</div>
+            
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function showToast(msg, type = 'error', ms = 3000) {
+      let container = document.querySelector('.toast-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+      }
+      const t = document.createElement('div');
+      t.className = 'toast ' + (type === 'error' ? 'error' : 'success');
+      t.textContent = msg;
+      container.appendChild(t);
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.remove();
+      }, ms);
+    }
+
+    const logoInput = document.getElementById("logoInput");
+    const logoUploadArea = document.getElementById("logoUploadArea");
+    const logoPreview = document.getElementById("logoPreview");
+    const uploadText = document.getElementById("uploadText");
+    const removeLogoBtn = document.getElementById("removeLogoBtn");
+
+    function loadLogoFromStorage() {
+      const logoData = localStorage.getItem("schoolLogo");
+      if (logoData) {
+        logoPreview.src = logoData;
+        logoPreview.classList.add("visible");
+        uploadText.style.display = "none";
+        logoUploadArea.classList.add("has-logo");
+        removeLogoBtn.classList.add("visible");
+        return;
+      }
+      fetch("/LOGO.png").then((res) => {
+        if (res.ok) return res.blob();
+        throw new Error("LOGO.png not found");
+      }).then((blob) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          logoPreview.src = e.target.result;
+          logoPreview.classList.add("visible");
+          uploadText.style.display = "none";
+          logoUploadArea.classList.add("has-logo");
+          removeLogoBtn.classList.add("visible");
+        };
+        reader.readAsDataURL(blob);
+      }).catch(() => {});
+    }
+
+    function handleLogoFile(file) {
+      if (!file.type.startsWith("image/")) {
+        showToast("Please select an image file", "error");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const logoData = e.target.result;
+        localStorage.setItem("schoolLogo", logoData);
+        logoPreview.src = logoData;
+        logoPreview.classList.add("visible");
+        uploadText.style.display = "none";
+        logoUploadArea.classList.add("has-logo");
+        removeLogoBtn.classList.add("visible");
+        showToast("School logo uploaded successfully", "success");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    logoUploadArea.addEventListener("click", () => logoInput.click());
+    logoInput.addEventListener("change", (e) => {
+      if (e.target.files[0]) handleLogoFile(e.target.files[0]);
+    });
+    logoUploadArea.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      logoUploadArea.style.borderColor = "var(--primary)";
+      logoUploadArea.style.background = "rgba(37, 99, 235, 0.15)";
+    });
+    logoUploadArea.addEventListener("dragleave", (e) => {
+      e.preventDefault();
+      logoUploadArea.style.borderColor = "rgba(148, 163, 184, 0.6)";
+      logoUploadArea.style.background = "rgba(30, 41, 59, 0.6)";
+    });
+    logoUploadArea.addEventListener("drop", (e) => {
+      e.preventDefault();
+      logoUploadArea.style.borderColor = "rgba(148, 163, 184, 0.6)";
+      logoUploadArea.style.background = "rgba(30, 41, 59, 0.6)";
+      if (e.dataTransfer.files[0]) handleLogoFile(e.dataTransfer.files[0]);
+    });
+    removeLogoBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      localStorage.removeItem("schoolLogo");
+      logoPreview.src = "";
+      logoPreview.classList.remove("visible");
+      uploadText.style.display = "block";
+      logoUploadArea.classList.remove("has-logo");
+      removeLogoBtn.style.display = 'none';
+      logoInput.value = "";
+      showToast("Logo removed", "success");
+    });
+
+    loadLogoFromStorage();
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const staffId = document.getElementById("staffId").value.trim();
+      const password = document.getElementById("password").value.trim();
+      if (!staffId || !password) {
+        showToast("Please enter both Staff ID and Password.", "error");
+        return;
+      }
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ staffId, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.error || "Login failed", "error");
+          return;
+        }
+        if (data.token) localStorage.setItem('token', data.token);
+        if (data.user) localStorage.setItem('staff', JSON.stringify(data.user));
+        window.location.href = "staff-dashboard.html";
+      } catch (err) {
+        console.error(err);
+        showToast("Server error, please try again.", "error");
+      }
+    });
+
+    
+  </script>
+</body>
+</html>
+
+

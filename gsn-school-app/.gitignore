@@ -1,0 +1,8 @@
+node_modules/
+db.sqlite
+server_log.txt
+.env
+.DS_Store
+npm-debug.log
+.vscode/
+coverage/

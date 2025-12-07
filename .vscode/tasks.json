@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "install",
+			"path": "gsn-school-app",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: install - gsn-school-app",
+			"detail": "install dependencies from package"
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"path": "gsn-school-app",
+			"problemMatcher": [],
+			"label": "npm: start - gsn-school-app",
+			"detail": "node server.js",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

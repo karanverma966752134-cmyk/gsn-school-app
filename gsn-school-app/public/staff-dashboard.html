@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GSN PUBLIC SCHOOL · Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    .layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      border-right: 1px solid rgba(148, 163, 184, 0.1);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand { display: flex; align-items: center; gap: 12px; }
+    .sidebar-brand img { width: 48px; height: 48px; border-radius: 12px; }
+    .sidebar-brand-text h3 { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
+    .sidebar-brand-text p { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+    .nav-section { display: flex; flex-direction: column; gap: 6px; }
+    .nav-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; padding: 0 12px; margin-bottom: 8px; }
+    .nav-btn {
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      color: #cbd5e1;
+      text-align: left;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-btn:hover { background: rgba(148, 163, 184, 0.1); color: #f1f5f9; }
+    .nav-btn.active { background: linear-gradient(90deg, #3b82f6, #2563eb); color: #fff; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+
+    .sidebar-footer { margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(148, 163, 184, 0.1); font-size: 12px; color: #94a3b8; }
+
+    /* Main */
+    .main {
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, #0f172a 0%, #1a1f2e 100%);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(8px);
+      sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .topbar-left h2 { font-size: 18px; font-weight: 700; }
+    .topbar-left p { font-size: 13px; color: #94a3b8; }
+
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .chip { padding: 6px 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 20px; font-size: 12px; color: #93c5fd; }
+
+    .user-info { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(148, 163, 184, 0.05); border-radius: 8px; }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
+    .user-details { font-size: 13px; }
+    .user-details strong { display: block; color: #e2e8f0; }
+    .user-details span { color: #94a3b8; font-size: 11px; }
+
+    .logout-btn { padding: 8px 16px; background: rgba(239, 68, 68, 0.1); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
+
+    /* Content */
+    .content { padding: 32px; display: flex; flex-direction: column; gap: 32px; flex: 1; }
+
+    .section-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .section-desc { font-size: 13px; color: #94a3b8; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .stat-card:hover { border-color: rgba(148, 163, 184, 0.3); transform: translateY(-2px); }
+
+    .stat-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .stat-value { font-size: 32px; font-weight: 700; color: #f1f5f9; }
+    .stat-sub { font-size: 11px; color: #64748b; }
+
+    .section { display: flex; flex-direction: column; gap: 16px; }
+    
+    .data-table {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(59, 130, 246, 0.05);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      font-weight: 600;
+      font-size: 12px;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .table-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+      font-size: 13px;
+      align-items: center;
+    }
+
+    .table-row:last-child { border-bottom: none; }
+    .table-row:hover { background: rgba(148, 163, 184, 0.02); }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      width: fit-content;
+    }
+
+    .badge-green { background: rgba(34, 197, 94, 0.15); color: #86efac; }
+    .badge-yellow { background: rgba(251, 146, 60, 0.15); color: #feda7a; }
+    .badge-blue { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
+
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.3s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: fixed; left: -280px; top: 0; height: 100vh; z-index: 100; transition: left 0.3s; }
+      .sidebar.open { left: 0; }
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .table-header, .table-row { grid-template-columns: repeat(2, 1fr); }
+      .topbar { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/logo-mark.svg" alt="GSN">
+        <div class="sidebar-brand-text">
+          <h3>GSN SCHOOL</h3>
+          <p>Shernagar</p>
+        </div>
+      </div>
+
+      <nav>
+        <div class="nav-section">
+          <div class="nav-label">Main</div>
+          <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+          <button class="nav-btn" data-page="students">👥 Students</button>
+          <button class="nav-btn" data-page="attendance">✓ Attendance</button>
+          <button class="nav-btn" data-page="fees">💰 Fees</button>
+          <button class="nav-btn" data-page="homework">📚 Homework</button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        GSN Staff App © 2025<br>Session 2025–26
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="back-btn" data-fallback="/staff-dashboard.html" title="Back">←</button>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p>GSN PUBLIC SCHOOL · Staff Portal</p>
+        </div>
+
+        <div class="topbar-right">
+          <div class="chip">Campus: Shernagar</div>
+          <div class="user-info">
+            <div class="user-avatar" id="userInitial">S</div>
+            <div class="user-details">
+              <strong id="userName">Staff</strong>
+              <span id="userRole">Role</span>
+            </div>
+          </div>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+      </header>
+
+      <!-- Dashboard Page -->
+      <section class="page active" id="page-dashboard">
+        <div class="content">
+          <div>
+            <h1 class="section-title">Welcome Back</h1>
+            <p class="section-desc">Here's your school overview</p>
+          </div>
+
+          <div class="cards-grid">
+            <div class="stat-card">
+              <div class="stat-label">📚 Total Students</div>
+              <div class="stat-value" id="dashStudents">0</div>
+              <div class="stat-sub">All classes enrolled</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">👨‍🏫 Staff Members</div>
+              <div class="stat-value" id="dashStaff">0</div>
+              <div class="stat-sub">Teaching & non-teaching</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">💳 Pending Fees</div>
+              <div class="stat-value" id="dashPendingFees">₹0</div>
+              <div class="stat-sub">Outstanding balance</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">📅 Today</div>
+              <div class="stat-value stat-date" id="dashDate">-</div>
+              <div class="stat-sub">Current date</div>
+            </div>
+          </div>
+
+          <!-- Recent Students -->
+          <div class="section">
+            <div>
+              <h2 class="section-title">Recent Students</h2>
+              <p class="section-desc">Latest registered students</p>
+            </div>
+            <div class="data-table">
+              <div class="table-header">
+                <div>Admission No</div>
+                <div>Name</div>
+                <div>Class</div>
+                <div>Section</div>
+              </div>
+              <div id="recentStudents"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Students Page (placeholder) -->
+      <section class="page" id="page-students">
+        <div class="content">
+          <h1 class="section-title">Students</h1>
+          <p>Open the students app to manage records.</p>
+        </div>
+      </section>
+
+      <!-- Similar placeholders for other pages -->
+      <section class="page" id="page-attendance">
+        <div class="content">
+          <h1 class="section-title">Attendance</h1>
+          <p>Open attendance tools from Students.</p>
+        </div>
+      </section>
+
+      <section class="page" id="page-fees">
+        <div class="content">
+          <h1 class="section-title">Fees</h1>
+          <p>Open the payments app to record fees.</p>
+        </div>
+      </section>
+
+      <section class="page" id="page-homework">
+        <div class="content">
+          <h1 class="section-title">Homework</h1>
+          <p>Manage homework assignments from the Students section.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const staff = JSON.parse(localStorage.getItem('staff') || 'null');
+    if (!staff) window.location.href = '/login.html';
+
+    document.getElementById('userName').textContent = staff.name || 'Staff';
+    document.getElementById('userRole').textContent = staff.role || 'User';
+    document.getElementById('userInitial').textContent = (staff.name || 'S').charAt(0).toUpperCase();
+
+    // Nav
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const page = btn.getAttribute('data-page');
+        document.getElementById('page-' + page).classList.add('active');
+        document.getElementById('pageTitle').textContent = btn.textContent.slice(2).trim();
+
+        // Redirect to the full page implementations only when user explicitly navigates
+        if (page === 'students') {
+          window.location.href = '/students.html';
+        } else if (page === 'attendance') {
+          // attendance lives under students page for now
+          window.location.href = '/students.html';
+        } else if (page === 'fees') {
+          window.location.href = '/payments.html';
+        } else if (page === 'homework') {
+          window.location.href = '/students.html';
+        }
+      });
+    });
+
+    // Dashboard load
+    async function loadDashboard() {
+      try {
+        const res = await fetch('/api/dashboard');
+        const data = await res.json();
+        document.getElementById('dashStudents').textContent = data.totalStudents || 0;
+        document.getElementById('dashStaff').textContent = data.totalStaff || 0;
+        document.getElementById('dashPendingFees').textContent = '₹' + (data.pendingFees || 0);
+
+        const d = new Date();
+        document.getElementById('dashDate').textContent = d.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' });
+
+        // Recent students
+        const sRes = await fetch('/api/students');
+        const students = (await sRes.json()).slice(0, 5);
+        const tbody = document.getElementById('recentStudents');
+        tbody.innerHTML = students.map(s => `<div class="table-row"><div>${s.adm_no}</div><div>${s.name}</div><div><span class="badge badge-blue">${s.class}</span></div><div>${s.section}</div></div>`).join('');
+      } catch (err) {
+        console.error('Dashboard error:', err);
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('staff');
+      localStorage.removeItem('token');
+      window.location.href = '/login.html';
+    }
+
+    loadDashboard();
+    // load back button helper
+    (function(){
+      const s = document.createElement('script'); s.src = '/back.js'; document.body.appendChild(s);
+    })();
+  </script>
+
+  <!-- Dev banner removed -->
+</body>
+</html>
